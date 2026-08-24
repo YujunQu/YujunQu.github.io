@@ -1,0 +1,6 @@
+.git
+.next
+node_modules
+.env
+storage/uploads
+Flow titration data.xlsx

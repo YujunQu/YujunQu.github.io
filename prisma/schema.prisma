@@ -1,0 +1,54 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  VISITOR
+}
+
+enum UserStatus {
+  ACTIVE
+  DISABLED
+}
+
+model User {
+  id           String     @id @default(cuid())
+  username     String     @unique
+  passwordHash String     @map("password_hash")
+  role         UserRole   @default(VISITOR)
+  status       UserStatus @default(ACTIVE)
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model AntibodyRecord {
+  id              String   @id @default(cuid())
+  species         String
+  sample          String
+  target          String
+  dye             String
+  clone           String?
+  productName     String   @map("product_name")
+  catalogNo       String   @map("catalog_no")
+  concentration   String?
+  vendor          String?
+  vendorDose      String?  @map("vendor_dose")
+  system          String?
+  stainCondition  String?  @map("stain_condition")
+  optimalDose     String?  @map("optimal_dose")
+  minimumDose     String?  @map("minimum_dose")
+  titrationResult String?  @map("titration_result")
+  imagePath       String?  @map("image_path")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("antibody_records")
+}
