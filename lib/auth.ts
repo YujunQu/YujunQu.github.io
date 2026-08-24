@@ -3,7 +3,7 @@ import { UserStatus } from "@prisma/client";
 import { redirect } from "next/navigation";
 
 import { prisma } from "./prisma";
-import { clearSessionCookie, requireAdminSession, requireSession, setSessionCookie } from "./session";
+import { clearSessionCookie, getSessionFromCookies, requireAdminSession, setSessionCookie } from "./session";
 
 export async function hashPassword(password: string) {
   return bcrypt.hash(password, 12);
@@ -52,7 +52,11 @@ export async function logoutUser() {
 }
 
 export async function getCurrentUser() {
-  const session = await requireSession();
+  const session = await getSessionFromCookies();
+
+  if (!session) {
+    return null;
+  }
 
   const user = await prisma.user.findUnique({
     where: { id: session.userId },
