@@ -16,28 +16,21 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (isPublicPath(pathname)) {
-    const token = request.cookies.get(SESSION_COOKIE_NAME)?.value;
-    if (pathname === "/login" && token) {
-      const session = await verifySession(token);
-      if (session) {
-        return NextResponse.redirect(new URL("/", request.url));
-      }
-    }
     return NextResponse.next();
   }
 
   const token = request.cookies.get(SESSION_COOKIE_NAME)?.value;
   if (!token) {
-    return NextResponse.redirect(new URL("/login", request.url));
+    return NextResponse.rewrite(new URL("/login", request.url));
   }
 
   const session = await verifySession(token);
   if (!session) {
-    return NextResponse.redirect(new URL("/login", request.url));
+    return NextResponse.rewrite(new URL("/login", request.url));
   }
 
   if (pathname.startsWith("/admin") && session.role !== "ADMIN") {
-    return NextResponse.redirect(new URL("/forbidden", request.url));
+    return NextResponse.rewrite(new URL("/forbidden", request.url));
   }
 
   return NextResponse.next();
