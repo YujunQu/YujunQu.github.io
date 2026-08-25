@@ -22,6 +22,20 @@ function getSessionSecret() {
   return new TextEncoder().encode(secret);
 }
 
+function shouldUseSecureCookies() {
+  const override = process.env.COOKIE_SECURE;
+
+  if (override === "true") {
+    return true;
+  }
+
+  if (override === "false") {
+    return false;
+  }
+
+  return process.env.NODE_ENV === "production" && process.env.APP_URL?.startsWith("https://");
+}
+
 export async function signSession(payload: Omit<SessionPayload, keyof JWTPayload>) {
   return new SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })
@@ -57,7 +71,7 @@ export async function setSessionCookie(payload: Omit<SessionPayload, keyof JWTPa
   cookieStore.set(SESSION_COOKIE_NAME, token, {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: shouldUseSecureCookies(),
     path: "/",
     maxAge: 60 * 60 * 24 * 7,
   });

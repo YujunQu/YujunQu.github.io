@@ -28,7 +28,10 @@ cp .env.example .env
 - `DATABASE_URL`
 - `AUTH_SECRET`
 - `APP_URL`
+- `COOKIE_SECURE`
 - `UPLOAD_DIR`
+
+如果当前先用 `http://IP` 访问站点，请把 `COOKIE_SECURE` 设为 `false`。后续切到 `HTTPS` 后再改为 `true`。
 
 ## 本地开发
 
