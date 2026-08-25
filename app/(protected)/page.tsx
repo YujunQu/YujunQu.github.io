@@ -29,10 +29,6 @@ export default async function RecordsPage() {
   return (
     <main className="page-main">
       <div className="section-header">
-        <div>
-          <p className="panel-kicker">Protected Directory</p>
-          <h2>流式滴定数据查询</h2>
-        </div>
         <div className="result-badge">
           <strong>{total}</strong>
           <span>条记录</span>
