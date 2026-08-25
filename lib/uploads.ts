@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs";
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
@@ -8,7 +9,17 @@ function sanitizeBaseName(value: string) {
 
 export function getUploadDirectory() {
   if (process.env.UPLOAD_DIR) {
-    return path.resolve(/* turbopackIgnore: true */ process.cwd(), process.env.UPLOAD_DIR);
+    if (path.isAbsolute(process.env.UPLOAD_DIR)) {
+      return process.env.UPLOAD_DIR;
+    }
+
+    const candidates = [
+      path.resolve(/* turbopackIgnore: true */ process.cwd(), process.env.UPLOAD_DIR),
+      path.resolve("/app", process.env.UPLOAD_DIR),
+    ];
+
+    const existingCandidate = candidates.find((candidate) => existsSync(candidate));
+    return existingCandidate ?? candidates[0];
   }
 
   return path.join(process.cwd(), "storage", "uploads");
